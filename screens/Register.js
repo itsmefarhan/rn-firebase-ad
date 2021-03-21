@@ -22,7 +22,12 @@ const Register = ({ navigation }) => {
       const result = await firebase
         .auth()
         .createUserWithEmailAndPassword(email, password);
-      console.log(result.user);
+
+      await firebase.firestore().collection("users").doc(result.user.uid).set({
+        email: result.user.email,
+        id: result.user.uid,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
     } catch (error) {
       setError(error.message);
     }
@@ -42,6 +47,7 @@ const Register = ({ navigation }) => {
         <TextInput
           style={styles.input}
           label="Email"
+          autoCapitalize="none"
           value={email}
           mode="outlined"
           onChangeText={(e) => setEmail(e)}

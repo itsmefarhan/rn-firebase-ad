@@ -1,30 +1,35 @@
-import React from "react";
-import { View, StyleSheet, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, FlatList, Platform, Linking } from "react-native";
 import { Avatar, Button, Card, Title, Paragraph } from "react-native-paper";
+import firebase from "../fbconfig";
 
 const Home = () => {
-  const items = [
-    {
-      id: 1,
-      title: "Ad 1",
-      desc: "Ad One desc",
-      year: 2000,
-      price: 20,
-      image:
-        "https://images.unsplash.com/photo-1510872893374-80379d91fc92?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-      contact: "03212019264",
-    },
-    {
-      id: 2,
-      title: "Ad 2",
-      desc: "Ad Two desc",
-      year: 2010,
-      price: 100,
-      image:
-        "https://images.unsplash.com/photo-1510872893374-80379d91fc92?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80",
-      contact: "03212019264",
-    },
-  ];
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    const unsub = firebase
+      .firestore()
+      .collection("ads").orderBy('createdAt', 'desc')
+      .onSnapshot((querySnapshot) => {
+        let data = [];
+        querySnapshot.forEach((doc) => {
+          data.push({
+            ...doc.data(),
+            key: doc.id,
+          });
+        });
+        setItems(data);
+      });
+    return () => unsub();
+  }, []);
+
+  const handleDial = (contact) => {
+    if(Platform.OS === 'android') {
+      Linking.openURL(`tel:${contact}`)
+    } else {
+      Linking.openURL(`telprompt:${contact}`)
+    }
+  }
 
   const renderItem = (item) => (
     <Card style={styles.container}>
@@ -36,7 +41,7 @@ const Home = () => {
       <Card.Cover source={{ uri: item.image }} />
       <Card.Actions>
         <Button>{item.price}</Button>
-        <Button>Call Seller</Button>
+        <Button onPress={() => handleDial(item.contact)}>Call Seller</Button>
       </Card.Actions>
     </Card>
   );
@@ -44,7 +49,7 @@ const Home = () => {
     <View>
       <FlatList
         data={items}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.key}
         renderItem={({ item }) => renderItem(item)}
       />
     </View>

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Login from "./screens/Login";
-import Register from "./screens/Register";
-import CreateAd from "./screens/CreateAd";
-import Home from "./screens/Home";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import Login from "./screens/Login";
+import Register from "./screens/Register";
+import CreateAd from "./screens/CreateAd";
+import Home from "./screens/Home";
 import Account from "./screens/Account";
 import firebase from "./fbconfig";
 
@@ -50,13 +50,14 @@ export default function App() {
   const [user, setUser] = useState();
 
   useEffect(() => {
-    firebase.auth().onAuthStateChanged((user) => {
+    const unsub = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         setUser(user);
       } else {
         setUser();
       }
     });
+    return () => unsub();
   }, []);
 
   return (

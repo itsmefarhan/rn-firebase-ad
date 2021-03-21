@@ -19,10 +19,7 @@ const Login = ({ navigation }) => {
     setError(null);
 
     try {
-      const result = await firebase
-        .auth()
-        .signInWithEmailAndPassword(email, password);
-      console.log(result.user);
+      await firebase.auth().signInWithEmailAndPassword(email, password);
     } catch (error) {
       setError(error.message);
     }
@@ -42,6 +39,7 @@ const Login = ({ navigation }) => {
         <TextInput
           style={styles.input}
           label="Email"
+          autoCapitalize="none"
           value={email}
           mode="outlined"
           onChangeText={(e) => setEmail(e)}
