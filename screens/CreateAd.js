@@ -81,10 +81,35 @@ const CreateAd = ({ navigation }) => {
       setContact("");
       setImg("");
       navigation.navigate("Home");
+      sendNotificationToAllUsers(title);
     } catch (error) {
       setLoading(false);
       console.log(error);
     }
+  };
+
+  const sendNotification = async (token, body) => {
+    const message = {
+      to: token,
+      sound: "default",
+      title: "New Ad Posted",
+      body,
+      
+    };
+    await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(message),
+    });
+  };
+
+  const sendNotificationToAllUsers = async (title) => {
+    const users = await firebase.firestore().collection("users").get();
+    users.docs.map((user) => sendNotification(user.data().token, title));
   };
 
   return (
