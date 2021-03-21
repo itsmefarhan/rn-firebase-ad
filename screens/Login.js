@@ -8,10 +8,25 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { TextInput, Button } from "react-native-paper";
+import firebase from "../fbconfig";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+
+  const loginUser = async () => {
+    setError(null);
+
+    try {
+      const result = await firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password);
+      console.log(result.user);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="position">
@@ -40,7 +55,12 @@ const Login = ({ navigation }) => {
           onChangeText={(e) => setPassword(e)}
         />
       </View>
-      <Button mode="contained">Login</Button>
+      {error ? (
+        <Text style={{ marginVertical: 10, color: "red" }}>{error}</Text>
+      ) : null}
+      <Button mode="contained" onPress={loginUser}>
+        Login
+      </Button>
       <View
         style={{
           marginTop: 20,

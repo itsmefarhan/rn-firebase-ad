@@ -8,6 +8,6 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
-
+fbconfig.js
 # macOS
 .DS_Store

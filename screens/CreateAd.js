@@ -10,8 +10,8 @@ import { TextInput, Button } from "react-native-paper";
 const CreateAd = () => {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
-  const [year, setYear] = useState("");
-  const [price, setPrice] = useState("");
+  const [year, setYear] = useState();
+  const [price, setPrice] = useState();
   const [contact, setContact] = useState("");
 
   return (

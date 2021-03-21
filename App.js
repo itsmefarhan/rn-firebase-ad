@@ -1,6 +1,4 @@
-import { StatusBar } from "expo-status-bar";
-import React from "react";
-import { StyleSheet, Text, View, SafeAreaView } from "react-native";
+import React, { useEffect, useState } from "react";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import CreateAd from "./screens/CreateAd";
@@ -10,6 +8,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import Account from "./screens/Account";
+import firebase from "./fbconfig";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -38,7 +37,7 @@ const TabNav = () => (
     })}
     tabBarOptions={{
       activeTintColor: "#6200ee",
-      showLabel:false
+      showLabel: false,
     }}
   >
     <Tab.Screen name="Home" component={Home} />
@@ -48,18 +47,21 @@ const TabNav = () => (
 );
 
 export default function App() {
+  const [user, setUser] = useState();
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser();
+      }
+    });
+  }, []);
+
   return (
     <NavigationContainer>
-      <TabNav />
+      {user ? <TabNav /> : <StackNav />}
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    // flex: 1,
-    // backgroundColor: '#fff',
-    // alignItems: 'center',
-    // justifyContent: 'center',
-  },
-});

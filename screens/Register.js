@@ -8,10 +8,25 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { TextInput, Button } from "react-native-paper";
+import firebase from "../fbconfig";
 
 const Register = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+
+  const registerUser = async () => {
+    setError(null);
+
+    try {
+      const result = await firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password);
+      console.log(result.user);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="position">
@@ -40,21 +55,24 @@ const Register = ({ navigation }) => {
           onChangeText={(e) => setPassword(e)}
         />
       </View>
-      <Button mode="contained">Register</Button>
+      {error ? (
+        <Text style={{ marginVertical: 10, color: "red" }}>{error}</Text>
+      ) : null}
+      <Button mode="contained" onPress={registerUser}>
+        Register
+      </Button>
       <View
         style={{
           marginTop: 20,
-          flexDirection:'row',
+          flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Text>
-          Already a user?          
-        </Text>
+        <Text>Already a user?</Text>
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={{ color: "blue" }}> Login</Text>
-          </TouchableOpacity>
+          <Text style={{ color: "blue" }}> Login</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
